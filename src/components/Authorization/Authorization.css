@@ -1,0 +1,39 @@
+.authorization {
+  background-color: var(--component-background-color);
+  min-width: 100%;
+}
+
+.authorization__title {
+  text-align: center;
+}
+
+.authorization__form {
+  margin: 40px auto;
+  max-width: 400px;
+}
+
+.authorization__button-container {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.authorization__modal {
+  top: 40%;
+  max-width: 380px;
+}
+
+.authorization__modal-title {
+  margin: 0;
+  text-align: center;
+}
+
+.authorization__modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.authorization__modal-avatar {
+  margin: 0 10px 0 12px;
+}
