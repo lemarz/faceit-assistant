@@ -1,35 +1,59 @@
 import './App.css'
-import {NavLink, Route, Routes} from 'react-router-dom'
+
 import {useEffect, useState} from 'react'
-import logo from '../../images/logo.svg'
-import {ConfigProvider, Layout, theme, Image, Avatar, Typography} from 'antd'
-import Main from '../Main/Main'
+import {NavLink, Route, Routes} from 'react-router-dom'
+import {
+  ConfigProvider,
+  Layout,
+  theme,
+  Image,
+  Avatar,
+  Typography,
+  message,
+} from 'antd'
+
 import Authorization from '../Authorization/Authorization'
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
+import Main from '../Main/Main'
 import Profile from '../Profile/Profile'
 import Navigation from '../Navigation/Navigation'
 
-const {Header, Content} = Layout
-const {Text} = Typography
-
-const appTheme = {
-  algorithm: theme.darkAlgorithm,
-  token: {
-    fontFamily: 'Manrope',
-    colorPrimary: '#b37feb',
-    colorBgBase: '#20242a',
-  },
-}
+import {api} from '../../utils/Api'
+import logo from '../../images/logo.svg'
+import defaultAvatar from '../../images/avatar-default.jpeg'
 
 function App() {
+  const {Header, Content} = Layout
+  const {Text} = Typography
+  const [messageApi, contextHolder] = message.useMessage()
+
+  const appTheme = {
+    algorithm: theme.darkAlgorithm,
+    token: {
+      fontFamily: 'Manrope',
+      colorPrimary: '#b37feb',
+      colorBgBase: '#20242a',
+    },
+  }
+
   const [isAuth, setIsAuth] = useState(false)
   const [userInfo, setUserInfo] = useState({})
 
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuth')
     if (authStatus) {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'))
-      setUserInfo(userInfo)
+      const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
+      setUserInfo(localUserInfo)
+      api
+        .getUserInfo(localUserInfo.nickname)
+        .then((data) => {
+          setUserInfo(data)
+          localStorage.setItem('userInfo', JSON.stringify(data))
+        })
+        .catch((err) => {
+          messageApi.error('Произошла ошибка обновления профиля!')
+          console.error(err)
+        })
       setIsAuth(true)
     }
   }, [])
@@ -37,6 +61,7 @@ function App() {
   return (
     <ConfigProvider theme={appTheme}>
       <Layout className='app'>
+        {contextHolder}
         <Header className='app__header'>
           <div className='app__header-container'>
             <NavLink to='/' className='app__logo-container'>
@@ -55,7 +80,10 @@ function App() {
                   <Text underline={false} className='header__profile-nickname'>
                     {userInfo.nickname}
                   </Text>
-                  <Avatar src={userInfo.avatar} size={'large'} />
+                  <Avatar
+                    src={userInfo.avatar || defaultAvatar}
+                    size={'large'}
+                  />
                 </NavLink>
               )}
             </div>

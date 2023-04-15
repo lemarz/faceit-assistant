@@ -23,7 +23,6 @@
 }
 
 .app__content-container {
-  padding: 24px;
   margin: 40px 0 0 0;
   min-height: 280px;
 }
@@ -64,4 +63,8 @@
 .ant-menu {
   background-color: transparent !important;
   border-radius: 10px;
+}
+
+.ant-layout-sider-trigger {
+  background-color: transparent !important;
 }

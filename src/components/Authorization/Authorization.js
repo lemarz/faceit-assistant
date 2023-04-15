@@ -1,4 +1,5 @@
 import './Authorization.css'
+
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {
@@ -11,24 +12,20 @@ import {
   Typography,
   message,
 } from 'antd'
-import {UserOutlined} from '@ant-design/icons'
+
 import {Api} from '../../utils/Api'
+
 import {getLevelBadge} from '../../utils/utils'
-const {Title, Text} = Typography
+import defaultAvatar from '../../images/avatar-default.jpeg'
 
 function Authorization({setIsAuth, userInfo, setUserInfo}) {
+  const {Title, Text} = Typography
   const navigate = useNavigate()
   const [authForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
+
   const [isSearchPreloaderActive, setIsSearchPreloaderActive] = useState(false)
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-
-  const showErrorMessage = (message) => {
-    messageApi.open({
-      type: 'error',
-      content: message,
-    })
-  }
 
   const onCancelModal = () => {
     setIsConfirmModalOpen(false)
@@ -58,11 +55,11 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
       })
       .catch((err) => {
         if (err.status === 404) {
-          showErrorMessage('Пользователь не найден!')
+          messageApi.error('Пользователь не найден!')
           setIsSearchPreloaderActive(false)
         }
         if (err.status === 401) {
-          showErrorMessage('Токен не верный!')
+          messageApi.error('Токен не верный!')
           localStorage.removeItem('faceitToken')
           setIsSearchPreloaderActive(false)
         }
@@ -123,7 +120,7 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
         </Title>
         <div className='authorization__modal-container'>
           <Avatar
-            src={userInfo.avatar || <UserOutlined />}
+            src={userInfo.avatar || defaultAvatar}
             size='large'
             className='authorization__modal-avatar'
           />
@@ -132,7 +129,7 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
             src={getLevelBadge(userInfo.games?.csgo?.skill_level)}
             className='authorization__modal-avatar'
           />
-          <Text>{`${userInfo.games?.csgo?.faceit_elo} elo`}</Text>
+          <Text>{`${userInfo.games?.csgo?.faceit_elo} ELO`}</Text>
         </div>
       </Modal>
     </div>

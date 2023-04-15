@@ -1,0 +1,41 @@
+.profile {
+  background-color: var(--component-background-color);
+  position: relative;
+}
+
+.profile__coverImg {
+  border-radius: 3px;
+}
+
+.profile__info {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+}
+
+.profile__avatarImg {
+  border-radius: 100px;
+}
+
+.profile__player-info {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 0 20px 12px;
+  min-width: 300px;
+  border-radius: 2px;
+}
+
+.profile__player-nickname {
+  display: flex;
+  align-items: center;
+}
+
+.profile__player-level {
+  display: flex;
+  align-items: center;
+}
+
+.profile__logout-button {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}

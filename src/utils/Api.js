@@ -44,7 +44,6 @@ class Api {
   }
 }
 
-// * Экземпляр Api
 const api = new Api(localStorage.getItem('faceitToken'))
 
 export {api, Api}

@@ -1,15 +1,22 @@
 import './Navigation.css'
+
 import {Menu, Layout} from 'antd'
-import {getNavigateItem} from '../../utils/utils'
 import {UserOutlined} from '@ant-design/icons'
-const {Sider} = Layout
+
+import {getNavigateItem} from '../../utils/utils'
 const navigationLinks = [
   getNavigateItem('sub1', 'Profile', '/profile', <UserOutlined />),
 ]
 
 function Navigation() {
+  const {Sider} = Layout
   return (
-    <Sider style={{backgroundColor: 'transparent'}}>
+    <Sider
+      style={{backgroundColor: 'transparent'}}
+      width={150}
+      theme={'dark'}
+      // collapsible={true}
+      breakpoint={'md'}>
       <Menu
         theme={'dark'}
         defaultSelectedKeys={['sub1']}

@@ -1,9 +1,10 @@
 import './Main.css'
-import {Button, Typography} from 'antd'
-import {useNavigate} from 'react-router-dom'
-const {Title, Paragraph} = Typography
 
-function Main({isAuth}) {
+import {useNavigate} from 'react-router-dom'
+import {Button, Typography} from 'antd'
+
+function Main() {
+  const {Title, Paragraph} = Typography
   const navigate = useNavigate()
 
   const handleButtonClick = () => {
