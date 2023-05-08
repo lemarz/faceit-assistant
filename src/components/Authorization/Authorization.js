@@ -2,21 +2,13 @@ import './Authorization.css'
 
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {
-  Avatar,
-  Button,
-  Form,
-  Input,
-  Modal,
-  Spin,
-  Typography,
-  message,
-} from 'antd'
+import {Avatar, Button, Form, Input, Modal, Typography, message} from 'antd'
 
 import {Api} from '../../utils/Api'
 
-import {getLevelBadge} from '../../utils/utils'
+import {getLevelBadge, preventInvalidInput} from '../../utils/utils'
 import defaultAvatar from '../../images/avatar-default.jpeg'
+import {LockOutlined, UserOutlined} from '@ant-design/icons'
 
 function Authorization({setIsAuth, userInfo, setUserInfo}) {
   const {Title, Text} = Typography
@@ -24,7 +16,7 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
   const [authForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
 
-  const [isSearchPreloaderActive, setIsSearchPreloaderActive] = useState(false)
+  const [isPreloaderActive, setIsPreloaderActive] = useState(false)
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
 
   const onCancelModal = () => {
@@ -43,25 +35,27 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
   }
 
   const onLogin = ({nickname, token}) => {
-    setIsSearchPreloaderActive(true)
+    setIsPreloaderActive(true)
     const api = new Api(token)
     localStorage.setItem('faceitToken', token)
     api
       .getUserInfo(nickname)
       .then((data) => {
         setUserInfo(data)
-        setIsSearchPreloaderActive(false)
+        setIsPreloaderActive(false)
         setIsConfirmModalOpen(true)
       })
       .catch((err) => {
         if (err.status === 404) {
           messageApi.error('Пользователь не найден!')
-          setIsSearchPreloaderActive(false)
-        }
-        if (err.status === 401) {
+          setIsPreloaderActive(false)
+        } else if (err.status === 401) {
           messageApi.error('Токен не верный!')
           localStorage.removeItem('faceitToken')
-          setIsSearchPreloaderActive(false)
+          setIsPreloaderActive(false)
+        } else {
+          messageApi.error('Что-то пошло не так. Повторите попытку позже')
+          setIsPreloaderActive(false)
         }
       })
   }
@@ -73,7 +67,8 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
       <Form
         form={authForm}
         layout='vertical'
-        name='basic'
+        name='auth-form'
+        requiredMark={false}
         onFinish={onLogin}
         className='authorization__form'
         labelCol={{span: 8}}
@@ -82,7 +77,7 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
           label='Faceit nickname'
           name='nickname'
           rules={[{required: true, min: 3, message: 'Введите никнейм!'}]}>
-          <Input />
+          <Input prefix={<UserOutlined />} onKeyPress={preventInvalidInput} />
         </Form.Item>
 
         <Form.Item
@@ -92,17 +87,13 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
             {required: true, message: 'Введите токен!'},
             {min: 24, max: 48, message: 'Проверьте правильность токена!'},
           ]}>
-          <Input.Password />
+          <Input.Password prefix={<LockOutlined />} />
         </Form.Item>
 
         <Form.Item className='authorization__button-container'>
-          {isSearchPreloaderActive ? (
-            <Spin />
-          ) : (
-            <Button type='primary' htmlType='submit'>
-              Авторизация
-            </Button>
-          )}
+          <Button type='primary' htmlType='submit' loading={isPreloaderActive}>
+            Авторизация
+          </Button>
         </Form.Item>
       </Form>
       <Modal
@@ -120,16 +111,16 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
         </Title>
         <div className='authorization__modal-container'>
           <Avatar
-            src={userInfo.avatar || defaultAvatar}
+            src={userInfo?.avatar || defaultAvatar}
             size='large'
             className='authorization__modal-avatar'
           />
-          <Text>{userInfo.nickname}</Text>
+          <Text>{userInfo?.nickname}</Text>
           <Avatar
-            src={getLevelBadge(userInfo.games?.csgo?.skill_level)}
+            src={getLevelBadge(userInfo?.games.csgo.skill_level)}
             className='authorization__modal-avatar'
           />
-          <Text>{`${userInfo.games?.csgo?.faceit_elo} ELO`}</Text>
+          <Text>{`${userInfo?.games.csgo.faceit_elo} ELO`}</Text>
         </div>
       </Modal>
     </div>

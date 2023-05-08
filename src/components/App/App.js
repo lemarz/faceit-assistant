@@ -21,6 +21,7 @@ import Navigation from '../Navigation/Navigation'
 import {api} from '../../utils/Api'
 import logo from '../../images/logo.svg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
+import CommonMatches from '../CommonMatches/CommonMatches'
 
 function App() {
   const {Header, Content} = Layout
@@ -36,8 +37,10 @@ function App() {
     },
   }
 
-  const [isAuth, setIsAuth] = useState(false)
-  const [userInfo, setUserInfo] = useState({})
+  const [isAuth, setIsAuth] = useState(localStorage.getItem('isAuth'))
+  const [userInfo, setUserInfo] = useState(
+    JSON.parse(localStorage.getItem('userInfo'))
+  )
 
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuth')
@@ -101,6 +104,10 @@ function App() {
                     element={
                       <Profile userInfo={userInfo} setIsAuth={setIsAuth} />
                     }
+                  />
+                  <Route
+                    path='/common-matches'
+                    element={<CommonMatches userInfo={userInfo} />}
                   />
                 </Route>
                 <Route

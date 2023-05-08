@@ -1,0 +1,26 @@
+.common-matches {
+}
+
+.common-matches__title {
+  text-align: center;
+}
+
+.common-matches__form {
+  margin: 40px auto;
+  max-width: 400px;
+}
+
+.common-matches__submit-button {
+  display: flex;
+  justify-content: center;
+}
+
+.common-matches__list {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.common-matches__no-common {
+  text-align: center;
+  margin-top: 80px;
+}

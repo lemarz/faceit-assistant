@@ -1,25 +1,31 @@
 import './Navigation.css'
 
 import {Menu, Layout} from 'antd'
-import {UserOutlined} from '@ant-design/icons'
+import {BlockOutlined, UserOutlined} from '@ant-design/icons'
+import {useLocation} from 'react-router-dom'
 
 import {getNavigateItem} from '../../utils/utils'
+
 const navigationLinks = [
-  getNavigateItem('sub1', 'Profile', '/profile', <UserOutlined />),
+  getNavigateItem('Профиль', '/profile', <UserOutlined />),
+  getNavigateItem('Общие матчи', '/common-matches', <BlockOutlined />),
 ]
 
 function Navigation() {
   const {Sider} = Layout
+  const location = useLocation()
+
   return (
     <Sider
-      style={{backgroundColor: 'transparent'}}
-      width={150}
+      style={{backgroundColor: 'transparent', height: '100%'}}
+      width={170}
       theme={'dark'}
       // collapsible={true}
-      breakpoint={'md'}>
+      breakpoint={'lg'}>
       <Menu
         theme={'dark'}
         defaultSelectedKeys={['sub1']}
+        selectedKeys={location.pathname}
         items={navigationLinks}
       />
     </Sider>

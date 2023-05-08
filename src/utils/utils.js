@@ -24,12 +24,25 @@ const levelBadges = {
 }
 const getLevelBadge = (level) => levelBadges[level]
 
-function getNavigateItem(key, label, navigateTo, icon) {
+function getNavigateItem(label, navigateTo, icon) {
   return {
     label: <NavLink to={navigateTo}>{label}</NavLink>,
-    key,
+    key: navigateTo,
     icon,
+    title: label,
   }
 }
 
-export {getLevelBadge, getNavigateItem}
+const preventInvalidInput = (evt) => {
+  const regex = /[^a-zA-Z0-9-_]/g
+  if (regex.test(evt.key)) {
+    evt.preventDefault()
+  }
+}
+
+const reformatDate = (unix) => {
+  const dateObject = new Date(unix * 1000)
+  return dateObject.toLocaleString()
+}
+
+export {getLevelBadge, getNavigateItem, preventInvalidInput, reformatDate}
