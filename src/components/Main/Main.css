@@ -1,0 +1,19 @@
+.main {
+  background-color: var(--component-background-color);
+  padding: 0 150px;
+}
+
+.main__title {
+  text-align: center;
+}
+
+.main__text {
+  text-align: center;
+  font-size: 18px;
+}
+
+.main__button-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
