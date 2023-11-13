@@ -1,7 +1,7 @@
 import './App.css'
 
-import {useEffect, useState} from 'react'
-import {NavLink, Route, Routes} from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Route, Routes } from 'react-router-dom'
 import {
   ConfigProvider,
   Layout,
@@ -18,14 +18,14 @@ import Main from '../Main/Main'
 import Profile from '../Profile/Profile'
 import Navigation from '../Navigation/Navigation'
 
-import {api} from '../../utils/Api'
+import { api } from '../../utils/Api'
 import logo from '../../images/logo.svg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
 import CommonMatches from '../CommonMatches/CommonMatches'
 
 function App() {
-  const {Header, Content} = Layout
-  const {Text} = Typography
+  const { Header, Content } = Layout
+  const { Text } = Typography
   const [messageApi, contextHolder] = message.useMessage()
 
   const appTheme = {

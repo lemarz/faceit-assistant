@@ -8,7 +8,7 @@ import faceitLevel_7 from '../images/faceit-levels/faceit7.svg'
 import faceitLevel_8 from '../images/faceit-levels/faceit8.svg'
 import faceitLevel_9 from '../images/faceit-levels/faceit9.svg'
 import faceitLevel_10 from '../images/faceit-levels/faceit10.svg'
-import {NavLink} from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const levelBadges = {
   1: faceitLevel_1,
@@ -45,4 +45,4 @@ const reformatDate = (unix) => {
   return dateObject.toLocaleString()
 }
 
-export {getLevelBadge, getNavigateItem, preventInvalidInput, reformatDate}
+export { getLevelBadge, getNavigateItem, preventInvalidInput, reformatDate }
