@@ -4,9 +4,11 @@ import { api } from '../../utils/Api'
 import { useEffect, useState } from 'react'
 import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
+import { useSelector } from 'react-redux'
 
-function CommonMatches({ userInfo }) {
+function CommonMatches() {
   const { Title } = Typography
+  const userInfo = useSelector((store) => store.userInfo)
 
   const [currentPlayersId, setCurrentPlayersId] = useState({})
 

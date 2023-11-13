@@ -6,9 +6,11 @@ import { findFlagUrlByIso2Code } from 'country-flags-svg'
 import { getLevelBadge } from '../../utils/utils'
 import defaultBanner from '../../images/banner-default.jpg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
+import { useSelector } from 'react-redux'
 
-function Profile({ setIsAuth, userInfo }) {
+function Profile({ setIsAuth }) {
   const { Title, Paragraph } = Typography
+  const userInfo = useSelector((store) => store.userInfo)
 
   const handleLogOut = () => {
     setIsAuth(false)
@@ -22,7 +24,7 @@ function Profile({ setIsAuth, userInfo }) {
       <Row>
         <Col flex={1}>
           <Image
-            src={userInfo.cover_image || defaultBanner}
+            src={userInfo?.cover_image || defaultBanner}
             preview={false}
             className='profile__coverImg'
           />
@@ -30,7 +32,7 @@ function Profile({ setIsAuth, userInfo }) {
             <Row gutter={48}>
               <Col flex={1}>
                 <Image
-                  src={userInfo.avatar || defaultAvatar}
+                  src={userInfo?.avatar || defaultAvatar}
                   preview={false}
                   className='profile__avatarImg'
                   width={100}

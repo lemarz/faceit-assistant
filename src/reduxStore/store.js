@@ -2,8 +2,10 @@ import { bindActionCreators, createStore } from 'redux'
 import reducer from './reducer'
 import * as actions from './actions'
 
+const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
+
 const initialState = {
-  userinfo: null,
+  userInfo: localUserInfo,
 }
 
 export const store = createStore(

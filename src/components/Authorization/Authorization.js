@@ -9,10 +9,13 @@ import { Api } from '../../utils/Api'
 import { getLevelBadge, preventInvalidInput } from '../../utils/utils'
 import defaultAvatar from '../../images/avatar-default.jpeg'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
+import { setUserInfoDispatch } from '../../reduxStore/store'
 
-function Authorization({ setIsAuth, userInfo, setUserInfo }) {
+function Authorization({ setIsAuth }) {
   const { Title, Text } = Typography
   const navigate = useNavigate()
+  const userInfo = useSelector((store) => store.userInfo)
   const [authForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -41,7 +44,7 @@ function Authorization({ setIsAuth, userInfo, setUserInfo }) {
     api
       .getUserInfo(nickname)
       .then((data) => {
-        setUserInfo(data)
+        setUserInfoDispatch(data)
         setIsPreloaderActive(false)
         setIsConfirmModalOpen(true)
       })

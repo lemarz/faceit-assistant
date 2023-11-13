@@ -22,35 +22,36 @@ import { api } from '../../utils/Api'
 import logo from '../../images/logo.svg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
 import CommonMatches from '../CommonMatches/CommonMatches'
+import { useSelector } from 'react-redux'
+import { setUserInfoDispatch } from '../../reduxStore/store'
+
+const APP_THEME = {
+  algorithm: theme.darkAlgorithm,
+  token: {
+    fontFamily: 'Manrope',
+    colorPrimary: '#b37feb',
+    colorBgBase: '#20242a',
+  },
+}
 
 function App() {
   const { Header, Content } = Layout
   const { Text } = Typography
+
+  const userInfo = useSelector((store) => store.userInfo)
+
   const [messageApi, contextHolder] = message.useMessage()
 
-  const appTheme = {
-    algorithm: theme.darkAlgorithm,
-    token: {
-      fontFamily: 'Manrope',
-      colorPrimary: '#b37feb',
-      colorBgBase: '#20242a',
-    },
-  }
-
   const [isAuth, setIsAuth] = useState(localStorage.getItem('isAuth'))
-  const [userInfo, setUserInfo] = useState(
-    JSON.parse(localStorage.getItem('userInfo'))
-  )
 
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuth')
     if (authStatus) {
-      const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
-      setUserInfo(localUserInfo)
       api
-        .getUserInfo(localUserInfo.nickname)
+        .getUserInfo(userInfo.nickname)
         .then((data) => {
-          setUserInfo(data)
+          // setUserInfo(data)
+          setUserInfoDispatch(data)
           localStorage.setItem('userInfo', JSON.stringify(data))
         })
         .catch((err) => {
@@ -62,7 +63,7 @@ function App() {
   }, [])
 
   return (
-    <ConfigProvider theme={appTheme}>
+    <ConfigProvider theme={APP_THEME}>
       <Layout className='app'>
         {contextHolder}
         <Header className='app__header'>
@@ -84,7 +85,7 @@ function App() {
                     {userInfo.nickname}
                   </Text>
                   <Avatar
-                    src={userInfo.avatar || defaultAvatar}
+                    src={userInfo?.avatar || defaultAvatar}
                     size={'large'}
                   />
                 </NavLink>
@@ -101,14 +102,9 @@ function App() {
                   element={<ProtectedRoute isAuth={isAuth} navigateTo='/' />}>
                   <Route
                     path='/profile'
-                    element={
-                      <Profile userInfo={userInfo} setIsAuth={setIsAuth} />
-                    }
+                    element={<Profile setIsAuth={setIsAuth} />}
                   />
-                  <Route
-                    path='/common-matches'
-                    element={<CommonMatches userInfo={userInfo} />}
-                  />
+                  <Route path='/common-matches' element={<CommonMatches />} />
                 </Route>
                 <Route
                   element={
@@ -118,13 +114,7 @@ function App() {
 
                   <Route
                     path='/authorization'
-                    element={
-                      <Authorization
-                        userInfo={userInfo}
-                        setUserInfo={setUserInfo}
-                        setIsAuth={setIsAuth}
-                      />
-                    }></Route>
+                    element={<Authorization setIsAuth={setIsAuth} />}></Route>
                 </Route>
               </Routes>
             </Content>
