@@ -5,10 +5,11 @@ import { useEffect, useState } from 'react'
 import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
 import { useSelector } from 'react-redux'
+import { selectUserInfo } from '../../reduxStore/selectors'
 
 function CommonMatches() {
   const { Title } = Typography
-  const userInfo = useSelector((store) => store.userInfo)
+  const userInfo = useSelector(selectUserInfo)
 
   const [currentPlayersId, setCurrentPlayersId] = useState({})
 

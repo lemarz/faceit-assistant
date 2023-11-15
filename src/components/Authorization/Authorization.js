@@ -11,11 +11,12 @@ import defaultAvatar from '../../images/avatar-default.jpeg'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 import { setUserInfoDispatch } from '../../reduxStore/store'
+import { selectUserInfo } from '../../reduxStore/selectors'
 
 function Authorization({ setIsAuth }) {
   const { Title, Text } = Typography
   const navigate = useNavigate()
-  const userInfo = useSelector((store) => store.userInfo)
+  const userInfo = useSelector(selectUserInfo)
   const [authForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
 

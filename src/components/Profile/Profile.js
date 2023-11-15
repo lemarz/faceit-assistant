@@ -7,10 +7,11 @@ import { getLevelBadge } from '../../utils/utils'
 import defaultBanner from '../../images/banner-default.jpg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
 import { useSelector } from 'react-redux'
+import { selectUserInfo } from '../../reduxStore/selectors'
 
 function Profile({ setIsAuth }) {
   const { Title, Paragraph } = Typography
-  const userInfo = useSelector((store) => store.userInfo)
+  const userInfo = useSelector(selectUserInfo)
 
   const handleLogOut = () => {
     setIsAuth(false)
