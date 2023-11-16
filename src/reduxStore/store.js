@@ -6,6 +6,8 @@ const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
 
 const initialState = {
   userInfo: localUserInfo,
+  commonMatches: null,
+  currentPlayersId: null,
 }
 
 export const store = createStore(
@@ -14,7 +16,8 @@ export const store = createStore(
   window.__REDUX_DEVTOOLS_EXTENSION__()
 )
 
-export const { setUserInfoDispatch } = bindActionCreators(
-  actions,
-  store.dispatch
-)
+export const {
+  setUserInfo: setUserInfoDispatch,
+  setCommonMatches: setCommonMatchesDispatch,
+  setCurrentPlayersId: setCurrentPlayersIdDispatch,
+} = bindActionCreators(actions, store.dispatch)

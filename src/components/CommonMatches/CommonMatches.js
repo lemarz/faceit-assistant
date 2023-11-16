@@ -5,19 +5,27 @@ import { useEffect, useState } from 'react'
 import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
 import { useSelector } from 'react-redux'
-import { selectUserInfo } from '../../reduxStore/selectors'
+import {
+  selectCommonMatches,
+  selectCurrentPlayersId,
+  selectUserInfo,
+} from '../../reduxStore/selectors'
+import {
+  setCommonMatchesDispatch,
+  setCurrentPlayersIdDispatch,
+} from '../../reduxStore/store'
 
 function CommonMatches() {
   const { Title } = Typography
-  const userInfo = useSelector(selectUserInfo)
 
-  const [currentPlayersId, setCurrentPlayersId] = useState({})
+  const userInfo = useSelector(selectUserInfo)
+  const commonMatches = useSelector(selectCommonMatches)
+  const currentPlayersId = useSelector(selectCurrentPlayersId)
 
   const [nicknameOneError, setNicknameOneError] = useState(null)
   const [nicknameTwoError, setNicknameTwoError] = useState(null)
   const [isPreloaderActive, setIsPreloaderActive] = useState(false)
 
-  const [commonMatches, setCommonMatches] = useState([])
   const [noCommonMatches, setNoCommonMatches] = useState(false)
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -48,7 +56,7 @@ function CommonMatches() {
   const onFinish = ({ nicknameOne, nicknameTwo }) => {
     setIsPreloaderActive(true)
     setNoCommonMatches(false)
-    setCommonMatches([])
+    setCommonMatchesDispatch([])
     if (nicknameOne === nicknameTwo) {
       messageApi.error('Введены одинаковые ники')
       setIsPreloaderActive(false)
@@ -71,7 +79,7 @@ function CommonMatches() {
       }),
     ])
       .then(([id1, id2]) => {
-        setCurrentPlayersId({
+        setCurrentPlayersIdDispatch({
           playerOne: { nickname: nicknameOne, id: id1 },
           playerTwo: { nickname: nicknameTwo, id: id2 },
         })
@@ -91,7 +99,7 @@ function CommonMatches() {
             if (!uniqueCommonMatches.length) {
               setNoCommonMatches(true)
             } else {
-              setCommonMatches(uniqueCommonMatches)
+              setCommonMatchesDispatch(uniqueCommonMatches)
             }
             setIsPreloaderActive(false)
           })
@@ -158,7 +166,7 @@ function CommonMatches() {
         </Title>
       )}
 
-      {!!commonMatches.length && (
+      {!!commonMatches?.length && (
         <>
           <Title level={4} style={{ textAlign: 'center' }}>
             Найдено общих матчей - {commonMatches.length}
