@@ -8,9 +8,9 @@ const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
 
 const initialState = {
   userInfo: localUserInfo,
-  currentPlayersId: {},
   commonMatchesStates: {
     commonMatches: [],
+    currentPlayersId: {},
     nicknameOneError: '',
     nicknameTwoError: '',
     isPreloaderActive: false,

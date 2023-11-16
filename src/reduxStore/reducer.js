@@ -4,7 +4,13 @@ const reducer = (state, action) => {
       return { ...state, userInfo: action.payload }
 
     case 'SET_CURRENT_PLAYERS_ID':
-      return { ...state, currentPlayersId: action.payload }
+      return {
+        ...state,
+        commonMatchesStates: {
+          ...state.commonMatchesStates,
+          currentPlayersId: action.payload,
+        },
+      }
 
     case 'SET_COMMON_MATCHES':
       return {

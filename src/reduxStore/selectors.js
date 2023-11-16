@@ -3,7 +3,8 @@ export const selectUserInfo = (store) => store.userInfo
 export const selectCommonMatches = (store) =>
   store.commonMatchesStates.commonMatches
 
-export const selectCurrentPlayersId = (store) => store.currentPlayersId
+export const selectCurrentPlayersId = (store) =>
+  store.commonMatchesStates.currentPlayersId
 
 export const selectNicknameOneError = (store) =>
   store.commonMatchesStates.nicknameOneError
