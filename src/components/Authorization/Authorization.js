@@ -1,18 +1,22 @@
 import './Authorization.css'
 
-import {useState} from 'react'
-import {useNavigate} from 'react-router-dom'
-import {Avatar, Button, Form, Input, Modal, Typography, message} from 'antd'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Avatar, Button, Form, Input, Modal, Typography, message } from 'antd'
 
-import {Api} from '../../utils/Api'
+import { Api } from '../../utils/Api'
 
-import {getLevelBadge, preventInvalidInput} from '../../utils/utils'
+import { getLevelBadge, preventInvalidInput } from '../../utils/utils'
 import defaultAvatar from '../../images/avatar-default.jpeg'
-import {LockOutlined, UserOutlined} from '@ant-design/icons'
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
+import { setUserInfoDispatch } from '../../reduxStore/store'
+import { selectUserInfo } from '../../reduxStore/selectors'
 
-function Authorization({setIsAuth, userInfo, setUserInfo}) {
-  const {Title, Text} = Typography
+function Authorization({ setIsAuth }) {
+  const { Title, Text } = Typography
   const navigate = useNavigate()
+  const userInfo = useSelector(selectUserInfo)
   const [authForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -34,14 +38,14 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
     navigate('/profile')
   }
 
-  const onLogin = ({nickname, token}) => {
+  const onLogin = ({ nickname, token }) => {
     setIsPreloaderActive(true)
     const api = new Api(token)
     localStorage.setItem('faceitToken', token)
     api
       .getUserInfo(nickname)
       .then((data) => {
-        setUserInfo(data)
+        setUserInfoDispatch(data)
         setIsPreloaderActive(false)
         setIsConfirmModalOpen(true)
       })
@@ -71,12 +75,12 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
         requiredMark={false}
         onFinish={onLogin}
         className='authorization__form'
-        labelCol={{span: 8}}
-        initialValues={{remember: true}}>
+        labelCol={{ span: 8 }}
+        initialValues={{ remember: true }}>
         <Form.Item
           label='Faceit nickname'
           name='nickname'
-          rules={[{required: true, min: 3, message: 'Введите никнейм!'}]}>
+          rules={[{ required: true, min: 3, message: 'Введите никнейм!' }]}>
           <Input prefix={<UserOutlined />} onKeyPress={preventInvalidInput} />
         </Form.Item>
 
@@ -84,8 +88,8 @@ function Authorization({setIsAuth, userInfo, setUserInfo}) {
           label='Api token'
           name='token'
           rules={[
-            {required: true, message: 'Введите токен!'},
-            {min: 24, max: 48, message: 'Проверьте правильность токена!'},
+            { required: true, message: 'Введите токен!' },
+            { min: 24, max: 48, message: 'Проверьте правильность токена!' },
           ]}>
           <Input.Password prefix={<LockOutlined />} />
         </Form.Item>

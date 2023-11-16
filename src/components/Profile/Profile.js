@@ -1,14 +1,17 @@
 import './Profile.css'
 
-import {Avatar, Button, Col, Image, Row, Typography} from 'antd'
-import {findFlagUrlByIso2Code} from 'country-flags-svg'
+import { Avatar, Button, Col, Image, Row, Typography } from 'antd'
+import { findFlagUrlByIso2Code } from 'country-flags-svg'
 
-import {getLevelBadge} from '../../utils/utils'
+import { getLevelBadge } from '../../utils/utils'
 import defaultBanner from '../../images/banner-default.jpg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
+import { useSelector } from 'react-redux'
+import { selectUserInfo } from '../../reduxStore/selectors'
 
-function Profile({setIsAuth, userInfo}) {
-  const {Title, Paragraph} = Typography
+function Profile({ setIsAuth }) {
+  const { Title, Paragraph } = Typography
+  const userInfo = useSelector(selectUserInfo)
 
   const handleLogOut = () => {
     setIsAuth(false)
@@ -22,7 +25,7 @@ function Profile({setIsAuth, userInfo}) {
       <Row>
         <Col flex={1}>
           <Image
-            src={userInfo.cover_image || defaultBanner}
+            src={userInfo?.cover_image || defaultBanner}
             preview={false}
             className='profile__coverImg'
           />
@@ -30,7 +33,7 @@ function Profile({setIsAuth, userInfo}) {
             <Row gutter={48}>
               <Col flex={1}>
                 <Image
-                  src={userInfo.avatar || defaultAvatar}
+                  src={userInfo?.avatar || defaultAvatar}
                   preview={false}
                   className='profile__avatarImg'
                   width={100}
@@ -43,7 +46,7 @@ function Profile({setIsAuth, userInfo}) {
                     src={findFlagUrlByIso2Code(userInfo.country)}
                     width={24}
                     preview={false}
-                    style={{marginLeft: 10}}
+                    style={{ marginLeft: 10 }}
                   />
                 </Title>
                 <Paragraph className='profile__player-level'>

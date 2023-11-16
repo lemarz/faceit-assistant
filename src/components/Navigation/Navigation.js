@@ -1,10 +1,10 @@
 import './Navigation.css'
 
-import {Menu, Layout} from 'antd'
-import {BlockOutlined, UserOutlined} from '@ant-design/icons'
-import {useLocation} from 'react-router-dom'
+import { Menu, Layout } from 'antd'
+import { BlockOutlined, UserOutlined } from '@ant-design/icons'
+import { useLocation } from 'react-router-dom'
 
-import {getNavigateItem} from '../../utils/utils'
+import { getNavigateItem } from '../../utils/utils'
 
 const navigationLinks = [
   getNavigateItem('Профиль', '/profile', <UserOutlined />),
@@ -12,12 +12,12 @@ const navigationLinks = [
 ]
 
 function Navigation() {
-  const {Sider} = Layout
+  const { Sider } = Layout
   const location = useLocation()
 
   return (
     <Sider
-      style={{backgroundColor: 'transparent', height: '100%'}}
+      style={{ backgroundColor: 'transparent', height: '100%' }}
       width={170}
       theme={'dark'}
       // collapsible={true}

@@ -5,7 +5,7 @@ class Api {
       authorization: 'Bearer ' + token,
       'Content-Type': 'application/json',
     }
-    this.offsetArr = Array.from({length: 11}, (_, i) => i * 100)
+    this.offsetArr = Array.from({ length: 11 }, (_, i) => i * 100)
   }
 
   _handleResponse(res) {
@@ -20,13 +20,13 @@ class Api {
       headers: this._headers,
     })
       .then(this._handleResponse)
-      .then(({player_id}) => player_id)
+      .then(({ player_id }) => player_id)
   }
 
   getPlayerMatches(playerId, offset, limit = 100) {
     return fetch(
       `${this._baseUrl}/players/${playerId}/history?game=csgo&offset=${offset}&limit=${limit}`,
-      {headers: this._headers}
+      { headers: this._headers }
     )
       .then(this._handleResponse)
       .then((res) => res.items)
@@ -65,4 +65,4 @@ class Api {
 
 const api = new Api(localStorage.getItem('faceitToken'))
 
-export {api, Api}
+export { api, Api }

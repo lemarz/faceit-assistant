@@ -1,21 +1,39 @@
 import './CommonMatches.css'
-import {Button, Form, Input, List, Typography, message, Space} from 'antd'
-import {api} from '../../utils/Api'
-import {useEffect, useState} from 'react'
-import {preventInvalidInput} from '../../utils/utils'
+import { Button, Form, Input, List, Typography, message } from 'antd'
+import { useEffect } from 'react'
+import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectCommonMatches,
+  selectCurrentPlayersId,
+  selectIsPreloaderActive,
+  selectNicknameOneError,
+  selectNicknameTwoError,
+  selectNoCommonMatches,
+  selectUserInfo,
+} from '../../reduxStore/selectors'
+import {
+  setCommonMatchesDispatch,
+  setNicknameOneErrorDispatch,
+  setNicknameTwoErrorDispatch,
+  setIsPreloaderActiveDispatch,
+  setNoCommonMatchesDispatch,
+} from '../../reduxStore/store'
+import { setCommonMatchesThunk } from '../../reduxStore/thunks'
 
-function CommonMatches({userInfo}) {
-  const {Title} = Typography
+function CommonMatches() {
+  const { Title } = Typography
 
-  const [currentPlayersId, setCurrentPlayersId] = useState({})
+  const userInfo = useSelector(selectUserInfo)
+  const commonMatches = useSelector(selectCommonMatches)
+  const currentPlayersId = useSelector(selectCurrentPlayersId)
+  const nicknameOneError = useSelector(selectNicknameOneError)
+  const nicknameTwoError = useSelector(selectNicknameTwoError)
+  const isPreloaderActive = useSelector(selectIsPreloaderActive)
+  const noCommonMatches = useSelector(selectNoCommonMatches)
 
-  const [nicknameOneError, setNicknameOneError] = useState(null)
-  const [nicknameTwoError, setNicknameTwoError] = useState(null)
-  const [isPreloaderActive, setIsPreloaderActive] = useState(false)
-
-  const [commonMatches, setCommonMatches] = useState([])
-  const [noCommonMatches, setNoCommonMatches] = useState(false)
+  const dispatch = useDispatch()
 
   const [messageApi, contextHolder] = message.useMessage()
   const [commonMatchesForm] = Form.useForm()
@@ -37,70 +55,16 @@ function CommonMatches({userInfo}) {
     },
   }
 
-  const getCrossings = (matchesArr, targetId) =>
-    matchesArr.filter((match) =>
-      match.playing_players.some((id) => id === targetId)
-    )
-
-  const onFinish = ({nicknameOne, nicknameTwo}) => {
-    setIsPreloaderActive(true)
-    setNoCommonMatches(false)
-    setCommonMatches([])
+  const onFinish = ({ nicknameOne, nicknameTwo }) => {
+    setIsPreloaderActiveDispatch(true)
+    setNoCommonMatchesDispatch(false)
+    setCommonMatchesDispatch([])
     if (nicknameOne === nicknameTwo) {
       messageApi.error('Введены одинаковые ники')
-      setIsPreloaderActive(false)
+      setIsPreloaderActiveDispatch(false)
     } else {
-      getCommonMatches(nicknameOne, nicknameTwo)
+      dispatch(setCommonMatchesThunk(nicknameOne, nicknameTwo))
     }
-  }
-
-  const getCommonMatches = (nicknameOne, nicknameTwo) => {
-    Promise.all([
-      api.getPlayerId(nicknameOne).catch((err) => {
-        setNicknameOneError('Игрок не найден. Проверьте ник.')
-        console.error(err)
-        throw new Error()
-      }),
-      api.getPlayerId(nicknameTwo).catch((err) => {
-        setNicknameTwoError('Игрок не найден. Проверьте ник.')
-        console.error(err)
-        throw new Error()
-      }),
-    ])
-      .then(([id1, id2]) => {
-        setCurrentPlayersId({
-          playerOne: {nickname: nicknameOne, id: id1},
-          playerTwo: {nickname: nicknameTwo, id: id2},
-        })
-        Promise.all([
-          api.getAllPlayerMatches(id1),
-          api.getAllPlayerMatches(id2),
-        ])
-          .then(([arr1, arr2]) => {
-            const crossingArr1 = getCrossings(arr1, id2)
-            const crossingArr2 = getCrossings(arr2, id1)
-            const allMatchesArr = [...crossingArr1, ...crossingArr2]
-            const uniqueCommonMatches = allMatchesArr.filter(
-              (match, index, arr) =>
-                arr.findIndex((item) => item.match_id === match.match_id) ===
-                index
-            )
-            if (!uniqueCommonMatches.length) {
-              setNoCommonMatches(true)
-            } else {
-              setCommonMatches(uniqueCommonMatches)
-            }
-            setIsPreloaderActive(false)
-          })
-          .catch((err) => {
-            throw new Error(err)
-          })
-      })
-      .catch((err) => {
-        messageApi.error('Что-то пошло не так')
-        setIsPreloaderActive(false)
-        console.error(err)
-      })
   }
 
   return (
@@ -111,19 +75,19 @@ function CommonMatches({userInfo}) {
         className='common-matches__form'
         form={commonMatchesForm}
         name='common-matches-form'
-        labelCol={{span: 8}}
-        initialValues={{remember: true}}
+        labelCol={{ span: 8 }}
+        initialValues={{ remember: true }}
         layout='vertical'
         requiredMark={false}
         onFinish={onFinish}>
         <Form.Item
           name='nicknameOne'
           label='Ник первого игрока'
-          rules={[{required: true, min: 3, message: 'Введите никнейм!'}]}
+          rules={[{ required: true, min: 3, message: 'Введите никнейм!' }]}
           {...nicknameValidation.nicknameOne}>
           <Input
             allowClear
-            onChange={() => setNicknameOneError(null)}
+            onChange={() => setNicknameOneErrorDispatch(null)}
             onKeyPress={preventInvalidInput}
           />
         </Form.Item>
@@ -131,11 +95,11 @@ function CommonMatches({userInfo}) {
         <Form.Item
           name='nicknameTwo'
           label='Ник второго игрока'
-          rules={[{required: true, min: 3, message: 'Введите никнейм!'}]}
+          rules={[{ required: true, min: 3, message: 'Введите никнейм!' }]}
           {...nicknameValidation.nicknameTwo}>
           <Input
             allowClear
-            onChange={() => setNicknameTwoError(null)}
+            onChange={() => setNicknameTwoErrorDispatch(null)}
             onKeyPress={preventInvalidInput}
           />
         </Form.Item>
@@ -155,9 +119,9 @@ function CommonMatches({userInfo}) {
         </Title>
       )}
 
-      {!!commonMatches.length && (
+      {!!commonMatches?.length && (
         <>
-          <Title level={4} style={{textAlign: 'center'}}>
+          <Title level={4} style={{ textAlign: 'center' }}>
             Найдено общих матчей - {commonMatches.length}
           </Title>
           <List
