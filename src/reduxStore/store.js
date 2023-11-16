@@ -1,7 +1,8 @@
-import { bindActionCreators, createStore } from 'redux'
+import { applyMiddleware, bindActionCreators, createStore } from 'redux'
 import reducer from './reducer'
 import * as actions from './actions'
 import { composeWithDevTools } from '@redux-devtools/extension'
+import thunk from 'redux-thunk'
 
 const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
 
@@ -17,7 +18,11 @@ const initialState = {
   },
 }
 
-export const store = createStore(reducer, initialState, composeWithDevTools())
+export const store = createStore(
+  reducer,
+  initialState,
+  composeWithDevTools(applyMiddleware(thunk))
+)
 
 export const {
   setUserInfo: setUserInfoDispatch,

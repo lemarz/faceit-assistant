@@ -1,10 +1,9 @@
 import './CommonMatches.css'
 import { Button, Form, Input, List, Typography, message } from 'antd'
-import { api } from '../../utils/Api'
 import { useEffect } from 'react'
 import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   selectCommonMatches,
   selectCurrentPlayersId,
@@ -16,12 +15,12 @@ import {
 } from '../../reduxStore/selectors'
 import {
   setCommonMatchesDispatch,
-  setCurrentPlayersIdDispatch,
   setNicknameOneErrorDispatch,
   setNicknameTwoErrorDispatch,
   setIsPreloaderActiveDispatch,
   setNoCommonMatchesDispatch,
 } from '../../reduxStore/store'
+import { setCommonMatchesThunk } from '../../reduxStore/thunks'
 
 function CommonMatches() {
   const { Title } = Typography
@@ -33,6 +32,8 @@ function CommonMatches() {
   const nicknameTwoError = useSelector(selectNicknameTwoError)
   const isPreloaderActive = useSelector(selectIsPreloaderActive)
   const noCommonMatches = useSelector(selectNoCommonMatches)
+
+  const dispatch = useDispatch()
 
   const [messageApi, contextHolder] = message.useMessage()
   const [commonMatchesForm] = Form.useForm()
@@ -54,11 +55,6 @@ function CommonMatches() {
     },
   }
 
-  const getCrossings = (matchesArr, targetId) =>
-    matchesArr.filter((match) =>
-      match.playing_players.some((id) => id === targetId)
-    )
-
   const onFinish = ({ nicknameOne, nicknameTwo }) => {
     setIsPreloaderActiveDispatch(true)
     setNoCommonMatchesDispatch(false)
@@ -67,57 +63,8 @@ function CommonMatches() {
       messageApi.error('Введены одинаковые ники')
       setIsPreloaderActiveDispatch(false)
     } else {
-      getCommonMatches(nicknameOne, nicknameTwo)
+      dispatch(setCommonMatchesThunk(nicknameOne, nicknameTwo))
     }
-  }
-
-  const getCommonMatches = (nicknameOne, nicknameTwo) => {
-    Promise.all([
-      api.getPlayerId(nicknameOne).catch((err) => {
-        setNicknameOneErrorDispatch('Игрок не найден. Проверьте ник.')
-        console.error(err)
-        throw new Error()
-      }),
-      api.getPlayerId(nicknameTwo).catch((err) => {
-        setNicknameTwoErrorDispatch('Игрок не найден. Проверьте ник.')
-        console.error(err)
-        throw new Error()
-      }),
-    ])
-      .then(([id1, id2]) => {
-        setCurrentPlayersIdDispatch({
-          playerOne: { nickname: nicknameOne, id: id1 },
-          playerTwo: { nickname: nicknameTwo, id: id2 },
-        })
-        Promise.all([
-          api.getAllPlayerMatches(id1),
-          api.getAllPlayerMatches(id2),
-        ])
-          .then(([arr1, arr2]) => {
-            const crossingArr1 = getCrossings(arr1, id2)
-            const crossingArr2 = getCrossings(arr2, id1)
-            const allMatchesArr = [...crossingArr1, ...crossingArr2]
-            const uniqueCommonMatches = allMatchesArr.filter(
-              (match, index, arr) =>
-                arr.findIndex((item) => item.match_id === match.match_id) ===
-                index
-            )
-            if (!uniqueCommonMatches.length) {
-              setNoCommonMatchesDispatch(true)
-            } else {
-              setCommonMatchesDispatch(uniqueCommonMatches)
-            }
-            setIsPreloaderActiveDispatch(false)
-          })
-          .catch((err) => {
-            throw new Error(err)
-          })
-      })
-      .catch((err) => {
-        messageApi.error('Что-то пошло не так')
-        setIsPreloaderActiveDispatch(false)
-        console.error(err)
-      })
   }
 
   return (
