@@ -1,14 +1,14 @@
 import './Profile.css'
 
-import {Avatar, Button, Col, Image, Row, Typography} from 'antd'
-import {findFlagUrlByIso2Code} from 'country-flags-svg'
+import { Avatar, Button, Col, Image, Row, Typography } from 'antd'
+import { findFlagUrlByIso2Code } from 'country-flags-svg'
 
-import {getLevelBadge} from '../../utils/utils'
+import { getLevelBadge } from '../../utils/utils'
 import defaultBanner from '../../images/banner-default.jpg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
 
-function Profile({setIsAuth, userInfo}) {
-  const {Title, Paragraph} = Typography
+function Profile({ setIsAuth, userInfo }) {
+  const { Title, Paragraph } = Typography
 
   const handleLogOut = () => {
     setIsAuth(false)
@@ -43,7 +43,7 @@ function Profile({setIsAuth, userInfo}) {
                     src={findFlagUrlByIso2Code(userInfo.country)}
                     width={24}
                     preview={false}
-                    style={{marginLeft: 10}}
+                    style={{ marginLeft: 10 }}
                   />
                 </Title>
                 <Paragraph className='profile__player-level'>

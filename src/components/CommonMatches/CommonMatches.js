@@ -1,12 +1,12 @@
 import './CommonMatches.css'
-import {Button, Form, Input, List, Typography, message} from 'antd'
-import {api} from '../../utils/Api'
-import {useEffect, useState} from 'react'
-import {preventInvalidInput} from '../../utils/utils'
+import { Button, Form, Input, List, Typography, message } from 'antd'
+import { api } from '../../utils/Api'
+import { useEffect, useState } from 'react'
+import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
 
-function CommonMatches({userInfo}) {
-  const {Title} = Typography
+function CommonMatches({ userInfo }) {
+  const { Title } = Typography
 
   const [currentPlayersId, setCurrentPlayersId] = useState({})
 
@@ -42,7 +42,7 @@ function CommonMatches({userInfo}) {
       match.playing_players.some((id) => id === targetId)
     )
 
-  const onFinish = ({nicknameOne, nicknameTwo}) => {
+  const onFinish = ({ nicknameOne, nicknameTwo }) => {
     setIsPreloaderActive(true)
     setNoCommonMatches(false)
     setCommonMatches([])
@@ -69,8 +69,8 @@ function CommonMatches({userInfo}) {
     ])
       .then(([id1, id2]) => {
         setCurrentPlayersId({
-          playerOne: {nickname: nicknameOne, id: id1},
-          playerTwo: {nickname: nicknameTwo, id: id2},
+          playerOne: { nickname: nicknameOne, id: id1 },
+          playerTwo: { nickname: nicknameTwo, id: id2 },
         })
         Promise.all([
           api.getAllPlayerMatches(id1),
@@ -111,15 +111,15 @@ function CommonMatches({userInfo}) {
         className='common-matches__form'
         form={commonMatchesForm}
         name='common-matches-form'
-        labelCol={{span: 8}}
-        initialValues={{remember: true}}
+        labelCol={{ span: 8 }}
+        initialValues={{ remember: true }}
         layout='vertical'
         requiredMark={false}
         onFinish={onFinish}>
         <Form.Item
           name='nicknameOne'
           label='Ник первого игрока'
-          rules={[{required: true, min: 3, message: 'Введите никнейм!'}]}
+          rules={[{ required: true, min: 3, message: 'Введите никнейм!' }]}
           {...nicknameValidation.nicknameOne}>
           <Input
             allowClear
@@ -131,7 +131,7 @@ function CommonMatches({userInfo}) {
         <Form.Item
           name='nicknameTwo'
           label='Ник второго игрока'
-          rules={[{required: true, min: 3, message: 'Введите никнейм!'}]}
+          rules={[{ required: true, min: 3, message: 'Введите никнейм!' }]}
           {...nicknameValidation.nicknameTwo}>
           <Input
             allowClear
@@ -157,7 +157,7 @@ function CommonMatches({userInfo}) {
 
       {!!commonMatches.length && (
         <>
-          <Title level={4} style={{textAlign: 'center'}}>
+          <Title level={4} style={{ textAlign: 'center' }}>
             Найдено общих матчей - {commonMatches.length}
           </Title>
           <List
