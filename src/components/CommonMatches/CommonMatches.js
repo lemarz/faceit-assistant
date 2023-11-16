@@ -1,18 +1,26 @@
 import './CommonMatches.css'
 import { Button, Form, Input, List, Typography, message } from 'antd'
 import { api } from '../../utils/Api'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
 import { useSelector } from 'react-redux'
 import {
   selectCommonMatches,
   selectCurrentPlayersId,
+  selectIsPreloaderActive,
+  selectNicknameOneError,
+  selectNicknameTwoError,
+  selectNoCommonMatches,
   selectUserInfo,
 } from '../../reduxStore/selectors'
 import {
   setCommonMatchesDispatch,
   setCurrentPlayersIdDispatch,
+  setNicknameOneErrorDispatch,
+  setNicknameTwoErrorDispatch,
+  setIsPreloaderActiveDispatch,
+  setNoCommonMatchesDispatch,
 } from '../../reduxStore/store'
 
 function CommonMatches() {
@@ -21,12 +29,10 @@ function CommonMatches() {
   const userInfo = useSelector(selectUserInfo)
   const commonMatches = useSelector(selectCommonMatches)
   const currentPlayersId = useSelector(selectCurrentPlayersId)
-
-  const [nicknameOneError, setNicknameOneError] = useState(null)
-  const [nicknameTwoError, setNicknameTwoError] = useState(null)
-  const [isPreloaderActive, setIsPreloaderActive] = useState(false)
-
-  const [noCommonMatches, setNoCommonMatches] = useState(false)
+  const nicknameOneError = useSelector(selectNicknameOneError)
+  const nicknameTwoError = useSelector(selectNicknameTwoError)
+  const isPreloaderActive = useSelector(selectIsPreloaderActive)
+  const noCommonMatches = useSelector(selectNoCommonMatches)
 
   const [messageApi, contextHolder] = message.useMessage()
   const [commonMatchesForm] = Form.useForm()
@@ -54,12 +60,12 @@ function CommonMatches() {
     )
 
   const onFinish = ({ nicknameOne, nicknameTwo }) => {
-    setIsPreloaderActive(true)
-    setNoCommonMatches(false)
+    setIsPreloaderActiveDispatch(true)
+    setNoCommonMatchesDispatch(false)
     setCommonMatchesDispatch([])
     if (nicknameOne === nicknameTwo) {
       messageApi.error('Введены одинаковые ники')
-      setIsPreloaderActive(false)
+      setIsPreloaderActiveDispatch(false)
     } else {
       getCommonMatches(nicknameOne, nicknameTwo)
     }
@@ -68,12 +74,12 @@ function CommonMatches() {
   const getCommonMatches = (nicknameOne, nicknameTwo) => {
     Promise.all([
       api.getPlayerId(nicknameOne).catch((err) => {
-        setNicknameOneError('Игрок не найден. Проверьте ник.')
+        setNicknameOneErrorDispatch('Игрок не найден. Проверьте ник.')
         console.error(err)
         throw new Error()
       }),
       api.getPlayerId(nicknameTwo).catch((err) => {
-        setNicknameTwoError('Игрок не найден. Проверьте ник.')
+        setNicknameTwoErrorDispatch('Игрок не найден. Проверьте ник.')
         console.error(err)
         throw new Error()
       }),
@@ -97,11 +103,11 @@ function CommonMatches() {
                 index
             )
             if (!uniqueCommonMatches.length) {
-              setNoCommonMatches(true)
+              setNoCommonMatchesDispatch(true)
             } else {
               setCommonMatchesDispatch(uniqueCommonMatches)
             }
-            setIsPreloaderActive(false)
+            setIsPreloaderActiveDispatch(false)
           })
           .catch((err) => {
             throw new Error(err)
@@ -109,7 +115,7 @@ function CommonMatches() {
       })
       .catch((err) => {
         messageApi.error('Что-то пошло не так')
-        setIsPreloaderActive(false)
+        setIsPreloaderActiveDispatch(false)
         console.error(err)
       })
   }
@@ -134,7 +140,7 @@ function CommonMatches() {
           {...nicknameValidation.nicknameOne}>
           <Input
             allowClear
-            onChange={() => setNicknameOneError(null)}
+            onChange={() => setNicknameOneErrorDispatch(null)}
             onKeyPress={preventInvalidInput}
           />
         </Form.Item>
@@ -146,7 +152,7 @@ function CommonMatches() {
           {...nicknameValidation.nicknameTwo}>
           <Input
             allowClear
-            onChange={() => setNicknameTwoError(null)}
+            onChange={() => setNicknameTwoErrorDispatch(null)}
             onKeyPress={preventInvalidInput}
           />
         </Form.Item>

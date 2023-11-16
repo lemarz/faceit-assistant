@@ -7,8 +7,14 @@ const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
 
 const initialState = {
   userInfo: localUserInfo,
-  commonMatches: null,
-  currentPlayersId: null,
+  currentPlayersId: {},
+  commonMatchesStates: {
+    commonMatches: [],
+    nicknameOneError: '',
+    nicknameTwoError: '',
+    isPreloaderActive: false,
+    noCommonMatches: false,
+  },
 }
 
 export const store = createStore(reducer, initialState, composeWithDevTools())
@@ -17,4 +23,8 @@ export const {
   setUserInfo: setUserInfoDispatch,
   setCommonMatches: setCommonMatchesDispatch,
   setCurrentPlayersId: setCurrentPlayersIdDispatch,
+  setNicknameOneError: setNicknameOneErrorDispatch,
+  setNicknameTwoError: setNicknameTwoErrorDispatch,
+  setIsPreloaderActive: setIsPreloaderActiveDispatch,
+  setNoCommonMatches: setNoCommonMatchesDispatch,
 } = bindActionCreators(actions, store.dispatch)
