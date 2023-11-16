@@ -1,6 +1,7 @@
 import { bindActionCreators, createStore } from 'redux'
 import reducer from './reducer'
 import * as actions from './actions'
+import { composeWithDevTools } from '@redux-devtools/extension'
 
 const localUserInfo = JSON.parse(localStorage.getItem('userInfo'))
 
@@ -10,11 +11,7 @@ const initialState = {
   currentPlayersId: null,
 }
 
-export const store = createStore(
-  reducer,
-  initialState,
-  window.__REDUX_DEVTOOLS_EXTENSION__()
-)
+export const store = createStore(reducer, initialState, composeWithDevTools())
 
 export const {
   setUserInfo: setUserInfoDispatch,
