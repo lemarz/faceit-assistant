@@ -3,8 +3,8 @@ import { Button, List } from 'antd'
 import { reformatDate } from '../../utils/utils'
 
 function MatchCard({ cardData, cardIndex, currentPlayersId }) {
-  const matchDate = reformatDate(cardData.finished_at)
-  const matchUrl = cardData.faceit_url.replace('{lang}', 'en')
+  const matchDate = reformatDate(cardData?.finished_at)
+  const matchUrl = cardData?.faceit_url.replace('{lang}', 'en')
   const matchTitle = `Матч ${cardIndex + 1} -  ${checkPlayersRelation()} `
 
   function checkPlayersRelation() {

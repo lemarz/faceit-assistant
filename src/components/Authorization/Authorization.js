@@ -47,6 +47,7 @@ function Authorization() {
     localStorage.setItem('userInfo', JSON.stringify(userInfo))
     localStorage.setItem('isAuth', 'true')
     dispatch(setIsAuth(true))
+    navigate(0)
     navigate('/profile')
   }
 

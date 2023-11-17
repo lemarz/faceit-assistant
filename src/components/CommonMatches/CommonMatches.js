@@ -1,28 +1,42 @@
 import './CommonMatches.css'
 import { Button, Form, Input, List, Typography, message } from 'antd'
-import { api } from '../../utils/Api'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { preventInvalidInput } from '../../utils/utils'
 import MatchCard from '../MatchCard/MatchCard'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { selectUserInfo } from '../../redux/authorization/authorization.selectors'
+import { setCommonMatchesAsync } from '../../redux/commonMatches/commonMatches.thunks'
+import {
+  selectCommonMatches,
+  selectCurrentPlayersId,
+  selectIsCommonMatchesPreloaderActive,
+  selectNicknameOneError,
+  selectNicknameTwoError,
+  selectNoCommonMatches,
+} from '../../redux/commonMatches/commonMatches.selectors'
+import {
+  setCommonMatches,
+  setIsCommonMatchesPreloaderActive,
+  setNicknameOneError,
+  setNicknameTwoError,
+  setNoCommonMatches,
+} from '../../redux/commonMatches/commonMatches.slice'
 
 function CommonMatches() {
   const { Title } = Typography
-
-  const userInfo = useSelector(selectUserInfo)
-
-  const [currentPlayersId, setCurrentPlayersId] = useState({})
-
-  const [nicknameOneError, setNicknameOneError] = useState(null)
-  const [nicknameTwoError, setNicknameTwoError] = useState(null)
-  const [isPreloaderActive, setIsPreloaderActive] = useState(false)
-
-  const [commonMatches, setCommonMatches] = useState([])
-  const [noCommonMatches, setNoCommonMatches] = useState(false)
-
   const [messageApi, contextHolder] = message.useMessage()
   const [commonMatchesForm] = Form.useForm()
+
+  const dispatch = useDispatch()
+  const userInfo = useSelector(selectUserInfo)
+  const commonMatches = useSelector(selectCommonMatches)
+  const currentPlayersId = useSelector(selectCurrentPlayersId)
+  const nicknameOneError = useSelector(selectNicknameOneError)
+  const nicknameTwoError = useSelector(selectNicknameTwoError)
+  const noCommonMatches = useSelector(selectNoCommonMatches)
+  const isAuthorizationPreloaderActive = useSelector(
+    selectIsCommonMatchesPreloaderActive
+  )
 
   useEffect(() => {
     commonMatchesForm.setFieldsValue({
@@ -41,70 +55,16 @@ function CommonMatches() {
     },
   }
 
-  const getCrossings = (matchesArr, targetId) =>
-    matchesArr.filter((match) =>
-      match.playing_players.some((id) => id === targetId)
-    )
-
   const onFinish = ({ nicknameOne, nicknameTwo }) => {
-    setIsPreloaderActive(true)
-    setNoCommonMatches(false)
-    setCommonMatches([])
+    dispatch(setIsCommonMatchesPreloaderActive(true))
+    dispatch(setNoCommonMatches(false))
+    dispatch(setCommonMatches([]))
     if (nicknameOne === nicknameTwo) {
       messageApi.error('Введены одинаковые ники')
-      setIsPreloaderActive(false)
+      dispatch(setIsCommonMatchesPreloaderActive(false))
     } else {
-      getCommonMatches(nicknameOne, nicknameTwo)
+      dispatch(setCommonMatchesAsync({ nicknameOne, nicknameTwo }))
     }
-  }
-
-  const getCommonMatches = (nicknameOne, nicknameTwo) => {
-    Promise.all([
-      api.getPlayerId(nicknameOne).catch((err) => {
-        setNicknameOneError('Игрок не найден. Проверьте ник.')
-        console.error(err)
-        throw new Error()
-      }),
-      api.getPlayerId(nicknameTwo).catch((err) => {
-        setNicknameTwoError('Игрок не найден. Проверьте ник.')
-        console.error(err)
-        throw new Error()
-      }),
-    ])
-      .then(([id1, id2]) => {
-        setCurrentPlayersId({
-          playerOne: { nickname: nicknameOne, id: id1 },
-          playerTwo: { nickname: nicknameTwo, id: id2 },
-        })
-        Promise.all([
-          api.getAllPlayerMatches(id1),
-          api.getAllPlayerMatches(id2),
-        ])
-          .then(([arr1, arr2]) => {
-            const crossingArr1 = getCrossings(arr1, id2)
-            const crossingArr2 = getCrossings(arr2, id1)
-            const allMatchesArr = [...crossingArr1, ...crossingArr2]
-            const uniqueCommonMatches = allMatchesArr.filter(
-              (match, index, arr) =>
-                arr.findIndex((item) => item.match_id === match.match_id) ===
-                index
-            )
-            if (!uniqueCommonMatches.length) {
-              setNoCommonMatches(true)
-            } else {
-              setCommonMatches(uniqueCommonMatches)
-            }
-            setIsPreloaderActive(false)
-          })
-          .catch((err) => {
-            throw new Error(err)
-          })
-      })
-      .catch((err) => {
-        messageApi.error('Что-то пошло не так')
-        setIsPreloaderActive(false)
-        console.error(err)
-      })
   }
 
   return (
@@ -127,7 +87,7 @@ function CommonMatches() {
           {...nicknameValidation.nicknameOne}>
           <Input
             allowClear
-            onChange={() => setNicknameOneError(null)}
+            onChange={() => dispatch(setNicknameOneError(null))}
             onKeyPress={preventInvalidInput}
           />
         </Form.Item>
@@ -139,7 +99,7 @@ function CommonMatches() {
           {...nicknameValidation.nicknameTwo}>
           <Input
             allowClear
-            onChange={() => setNicknameTwoError(null)}
+            onChange={() => dispatch(setNicknameTwoError(null))}
             onKeyPress={preventInvalidInput}
           />
         </Form.Item>
@@ -148,7 +108,7 @@ function CommonMatches() {
             type={'primary'}
             htmlType='submit'
             disabled={!!nicknameTwoError || !!nicknameOneError}
-            loading={isPreloaderActive}>
+            loading={isAuthorizationPreloaderActive}>
             Найти
           </Button>
         </Form.Item>
@@ -159,7 +119,7 @@ function CommonMatches() {
         </Title>
       )}
 
-      {!!commonMatches.length && (
+      {!!commonMatches?.length && (
         <>
           <Title level={4} style={{ textAlign: 'center' }}>
             Найдено общих матчей - {commonMatches.length}
