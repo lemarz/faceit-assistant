@@ -1,6 +1,5 @@
 import './Authorization.css'
 
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Avatar, Button, Form, Input, Modal, Typography, message } from 'antd'
 
@@ -9,53 +8,70 @@ import { Api } from '../../utils/Api'
 import { getLevelBadge, preventInvalidInput } from '../../utils/utils'
 import defaultAvatar from '../../images/avatar-default.jpeg'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectIsAuthorizationConfirmModalOpen,
+  selectIsAuthorizationPreloaderActive,
+  selectUserInfo,
+} from '../../redux/authorization/authorization.selectors'
+import {
+  setIsAuth,
+  setIsAuthorizationConfirmModalOpen,
+  setIsAuthorizationPreloaderActive,
+  setUserInfo,
+} from '../../redux/authorization/authorization.slice'
 
-function Authorization({ setIsAuth, userInfo, setUserInfo }) {
+function Authorization() {
   const { Title, Text } = Typography
+  const dispatch = useDispatch()
+  const userInfo = useSelector(selectUserInfo)
+  const isAuthorizationPreloaderActive = useSelector(
+    selectIsAuthorizationPreloaderActive
+  )
+  const isAuthorizationConfirmModalOpen = useSelector(
+    selectIsAuthorizationConfirmModalOpen
+  )
+
   const navigate = useNavigate()
   const [authForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
 
-  const [isPreloaderActive, setIsPreloaderActive] = useState(false)
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-
   const onCancelModal = () => {
-    setIsConfirmModalOpen(false)
+    dispatch(setIsAuthorizationConfirmModalOpen(false))
     authForm.setFieldsValue({
       nickname: '',
     })
   }
 
   const onConfirmModal = () => {
-    setIsAuth(true)
     localStorage.setItem('userInfo', JSON.stringify(userInfo))
     localStorage.setItem('isAuth', 'true')
-    navigate(0)
+    dispatch(setIsAuth(true))
     navigate('/profile')
   }
 
   const onLogin = ({ nickname, token }) => {
-    setIsPreloaderActive(true)
+    dispatch(setIsAuthorizationPreloaderActive(true))
     const api = new Api(token)
     localStorage.setItem('faceitToken', token)
     api
       .getUserInfo(nickname)
       .then((data) => {
-        setUserInfo(data)
-        setIsPreloaderActive(false)
-        setIsConfirmModalOpen(true)
+        dispatch(setUserInfo(data))
+        dispatch(setIsAuthorizationPreloaderActive(false))
+        dispatch(setIsAuthorizationConfirmModalOpen(true))
       })
       .catch((err) => {
         if (err.status === 404) {
           messageApi.error('Пользователь не найден!')
-          setIsPreloaderActive(false)
+          dispatch(setIsAuthorizationPreloaderActive(false))
         } else if (err.status === 401) {
           messageApi.error('Токен не верный!')
           localStorage.removeItem('faceitToken')
-          setIsPreloaderActive(false)
+          dispatch(setIsAuthorizationPreloaderActive(false))
         } else {
           messageApi.error('Что-то пошло не так. Повторите попытку позже')
-          setIsPreloaderActive(false)
+          dispatch(setIsAuthorizationPreloaderActive(false))
         }
       })
   }
@@ -91,13 +107,16 @@ function Authorization({ setIsAuth, userInfo, setUserInfo }) {
         </Form.Item>
 
         <Form.Item className='authorization__button-container'>
-          <Button type='primary' htmlType='submit' loading={isPreloaderActive}>
+          <Button
+            type='primary'
+            htmlType='submit'
+            loading={!!isAuthorizationPreloaderActive}>
             Авторизация
           </Button>
         </Form.Item>
       </Form>
       <Modal
-        open={isConfirmModalOpen}
+        open={!!isAuthorizationConfirmModalOpen}
         className='authorization__modal'
         closable={false}
         keyboard={false}

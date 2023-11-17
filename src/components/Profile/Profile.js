@@ -6,12 +6,22 @@ import { findFlagUrlByIso2Code } from 'country-flags-svg'
 import { getLevelBadge } from '../../utils/utils'
 import defaultBanner from '../../images/banner-default.jpg'
 import defaultAvatar from '../../images/avatar-default.jpeg'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUserInfo } from '../../redux/authorization/authorization.selectors'
+import {
+  setIsAuth,
+  setUserInfo,
+} from '../../redux/authorization/authorization.slice'
 
-function Profile({ setIsAuth, userInfo }) {
+function Profile() {
   const { Title, Paragraph } = Typography
 
+  const dispatch = useDispatch()
+  const userInfo = useSelector(selectUserInfo)
+
   const handleLogOut = () => {
-    setIsAuth(false)
+    dispatch(setIsAuth(false))
+    dispatch(setUserInfo(null))
     localStorage.removeItem('userInfo')
     localStorage.removeItem('isAuth')
     localStorage.removeItem('faceitToken')
@@ -22,7 +32,7 @@ function Profile({ setIsAuth, userInfo }) {
       <Row>
         <Col flex={1}>
           <Image
-            src={userInfo.cover_image || defaultBanner}
+            src={userInfo?.cover_image || defaultBanner}
             preview={false}
             className='profile__coverImg'
           />
@@ -30,7 +40,7 @@ function Profile({ setIsAuth, userInfo }) {
             <Row gutter={48}>
               <Col flex={1}>
                 <Image
-                  src={userInfo.avatar || defaultAvatar}
+                  src={userInfo?.avatar || defaultAvatar}
                   preview={false}
                   className='profile__avatarImg'
                   width={100}
@@ -38,18 +48,18 @@ function Profile({ setIsAuth, userInfo }) {
               </Col>
               <Col flex={1} className='profile__player-info'>
                 <Title level={3} className='profile__player-nickname'>
-                  {userInfo.nickname}
+                  {userInfo?.nickname}
                   <Image
-                    src={findFlagUrlByIso2Code(userInfo.country)}
+                    src={findFlagUrlByIso2Code(userInfo?.country)}
                     width={24}
                     preview={false}
                     style={{ marginLeft: 10 }}
                   />
                 </Title>
                 <Paragraph className='profile__player-level'>
-                  {userInfo.games.csgo.faceit_elo} ELO
+                  {userInfo?.games.csgo.faceit_elo} ELO
                   <Avatar
-                    src={getLevelBadge(userInfo.games.csgo.skill_level)}
+                    src={getLevelBadge(userInfo?.games.csgo.skill_level)}
                     className='authorization__modal-avatar'
                   />
                 </Paragraph>
